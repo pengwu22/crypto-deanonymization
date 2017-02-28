@@ -14,4 +14,4 @@ Only the blocks in the main chain are collected.
 Only valid (neither 'NA' nor '0.0.0.0') ip addresses' transaction records are computed.
 
 
-The ip addresses are vacant or invalid for the first or last hundred blocks, so in the test file, we pick 15 blocks from the middle.
+The ip addresses are vacant or invalid for the first or last few hundred blocks, so in the test file, we pick 15 blocks from the middle.
