@@ -2,6 +2,7 @@ import struct
 import hashlib
 
 
+
 def uint1(stream):
     return ord(stream.read(1))
 
@@ -52,15 +53,10 @@ def double_sha256(bytebuffer):
     return hashlib.sha256(hashlib.sha256(bytebuffer).digest()).digest()
 
 
-def byte2int(bytebuffer):
-    hash_obj = hashlib.sha256(bytebuffer)
-    hex_dig = hash_obj.hexdigest()
-    # print int(hex_dig)
+def hash2intid(bytebuffer):
+    import binascii
+    hex_dig = binascii.hexlify(bytebuffer)
     return int(hex_dig, 16) % 2147483647
-
-
-def hash2int(hash_hex):
-    return int(hash_hex, 16) % 2147483647
 
 
 def rawpk2hash160(pk_script):
@@ -71,3 +67,9 @@ def rawpk2addr(pk_script):
     import base58
     return base58.hash_160_to_bc_address(rawpk2hash160(pk_script))
 
+
+def blktime2datetime(blktime):
+    # Current timestamp as seconds since 1970-01-01T00:00 UTC
+    from datetime import timedelta, datetime
+    d = datetime(1970, 1, 1, 0, 0, 0) + timedelta(days=int(blktime)/86400, seconds=blktime%86400)
+    return d.strftime('%Y-%m-%d-%H-%M-%S')
