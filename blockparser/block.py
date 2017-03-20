@@ -78,9 +78,15 @@ class Block:
 		print "##### Tx Count: %d" % self.txCount
 		for t in self.Txs:
 			t.toString()
+from hashlib import sha256
+def double_sha256(x):
+	return sha256(sha256(x).digest()).digest()
 
 class Tx:
 	def __init__(self, blockchain):
+		#####
+		self.pos_start = blockchain.tell()
+		###
 		self.version = uint4(blockchain)
 		self.inCount = varint(blockchain)
 		self.inputs = []
@@ -94,6 +100,12 @@ class Tx:
 				output = txOutput(blockchain)
 				self.outputs.append(output)	
 		self.lockTime = uint4(blockchain)
+
+		####### self-defined
+		self.pos_end = blockchain.tell()
+		blockchain.seek(self.pos_start)
+		self.txHash = double_sha256(blockchain.read(self.pos_end-self.pos_start))
+		
 		
 	def toString(self):
 		print ""
@@ -109,6 +121,7 @@ class Tx:
 		print "Lock Time:\t %d" % self.lockTime
 
 		### self-defined output
+		print "\t %s" %hashStr(self.txHash[::-1])
 		def toFile(inputs, outputs):
 			pass#TODO
 		toFile(self.inputs, self.outputs)
@@ -152,4 +165,5 @@ class txOutput:
 		print "Value:\t\t %d" % self.value
 		print "Script Len:\t %d" % self.scriptLen
 		print "Pubkey:\t\t %s" % hashStr(self.pubkey)
-
+		print "\t\t %s" % hex_pk_script(self.pubkey)
+		print "How long? \t %d" % len(self.pubkey)
