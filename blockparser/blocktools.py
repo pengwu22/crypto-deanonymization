@@ -60,7 +60,8 @@ def hash2intid(bytebuffer):
 
 
 def rawpk2hash160(pk_script):
-    return pk_script[pk_script.find('\x14')+1:]
+    head = pk_script.find('\x14')+1
+    return pk_script[head:head+20]
 
 
 def rawpk2addr(pk_script):
