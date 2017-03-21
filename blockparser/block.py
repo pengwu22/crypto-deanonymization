@@ -31,7 +31,7 @@ def toFile_tidy(received_time, Txs):
 
 def toFile(received_time, Txs):
     # run in Block.toString
-    return toFile_tidy(received_time, Txs)
+    return toFile_untidy(received_time, Txs)
 
 class BlockHeader:
     def __init__(self, blockchain):
