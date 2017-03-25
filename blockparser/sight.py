@@ -21,6 +21,27 @@ def parse(blockchain):
 	print 'Reached End of Field'
 	print 'Parsed %s blocks', counter
 
+
+def parse_dates(blockchain):
+	print 'print Parsing Block Chain'
+	continueParsing = True
+	counter = 0
+	blockchain.seek(0, 2)
+	fSize = blockchain.tell() - 80 #Minus last Block header size for partial file
+	blockchain.seek(0, 0)
+	while continueParsing:
+		block = Block(blockchain)
+		continueParsing = block.continueParsing
+		if continueParsing:
+			#print '#',str(block.blockHeader.time)
+			print "{},{}".format(blktime2datetime(str(block.blockHeader.time)), blockchain.name)
+		counter+=1
+
+	print ''
+	print 'Reached End of Field'
+	print 'Parsed {} blocks'.format(counter)
+
+
 def main():
 	if len(sys.argv) < 2:
 		print 'Usage: sight.py filename'

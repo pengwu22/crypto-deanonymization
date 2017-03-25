@@ -3,7 +3,7 @@ from blocktools import *
 def toFile_untidy(received_time, Txs):
     # run in Block.toString
     f_tx = open('transactions.csv', 'w')
-    f_in = open('inputs.csv', 'w')
+    f_in = open('inputs_mapping.csv', 'w')
     f_out = open('outputs.csv', 'w')
     for tx in Txs:
         for m, input in enumerate(tx.inputs):
@@ -12,13 +12,13 @@ def toFile_untidy(received_time, Txs):
         for n, output in enumerate(tx.outputs):
             amount += output.value
             f_out.write('{},{},{},{}\n'.format(hashStr(tx.hash), n, output.value, rawpk2addr(output.pubkey)))
-        f_tx.write('{},{},{}\n'.format(hashStr(tx.hash), amount, received_time))
+        f_tx.write('{},{},{},{},{}\n'.format(hashStr(tx.hash), amount, received_time, tx.inCount, tx.outCount))
 
 
 def toFile_tidy(received_time, Txs):
     # run in Block.toString
     f_tx = open('transactions.csv', 'w')
-    f_in = open('inputs.csv', 'w')
+    f_in = open('inputs_mapping.csv', 'w')
     f_out = open('outputs.csv', 'w')
     for tx in Txs:
         for m, input in enumerate(tx.inputs):
@@ -27,7 +27,7 @@ def toFile_tidy(received_time, Txs):
         for n, output in enumerate(tx.outputs):
             amount += output.value
             f_out.write('{},{},{},{}\n'.format(hash2intid(tx.hash), n, output.value, hash2intid(rawpk2hash160(output.pubkey))))
-        f_tx.write('{},{},{}\n'.format(hash2intid(tx.hash), amount, blktime2datetime(received_time)))
+        f_tx.write('{},{},{},{},{}\n'.format(hash2intid(tx.hash), amount, blktime2datetime(received_time), tx.inCount, tx.outCount))
 
 def toFile(received_time, Txs):
     # run in Block.toString
@@ -98,7 +98,7 @@ class Block:
         blockchain.seek(curPos)
 
         tempBlockSize = fileSize - curPos
-        print tempBlockSize
+        #print tempBlockSize
         if tempBlockSize < size:
             return False
         return True
@@ -116,7 +116,8 @@ class Block:
         print
         print "##### Tx Count: %d" % self.txCount
         for t in self.Txs:
-            t.toString()
+            pass
+            #t.toString()
 
         toFile(self.blockHeader.time, self.Txs)
 

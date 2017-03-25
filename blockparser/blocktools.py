@@ -72,5 +72,5 @@ def rawpk2addr(pk_script):
 def blktime2datetime(blktime):
     # Current timestamp as seconds since 1970-01-01T00:00 UTC
     from datetime import timedelta, datetime
-    d = datetime(1970, 1, 1, 0, 0, 0) + timedelta(days=int(blktime)/86400, seconds=blktime%86400)
+    d = datetime(1970, 1, 1, 0, 0, 0) + timedelta(days=int(blktime)/86400, seconds=int(blktime)%86400)
     return d.strftime('%Y-%m-%d-%H-%M-%S')
