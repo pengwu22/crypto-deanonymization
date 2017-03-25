@@ -1,6 +1,22 @@
+"""
+Filename: block.py
+Purpose: definitions blockchain component classes and methods
+
+Authors:
+    * https://github.com/tenthirtyone/blocktools
+    * Peng Wu
+
+New features:
+    * Identify bloch hash
+    * Identify transaction hash
+    # CSV file output
+
+Licenses: BSD 3
+"""
+
 from blocktools import *
 
-def toFile_untidy(received_time, Txs):
+def toFile(received_time, Txs):
     # run in Block.toString
     f_tx = open('transactions.csv', 'w')
     f_in = open('inputs_mapping.csv', 'w')
@@ -12,26 +28,9 @@ def toFile_untidy(received_time, Txs):
         for n, output in enumerate(tx.outputs):
             amount += output.value
             f_out.write('{},{},{},{}\n'.format(hashStr(tx.hash), n, output.value, rawpk2addr(output.pubkey)))
-        f_tx.write('{},{},{},{},{}\n'.format(hashStr(tx.hash), amount, received_time, tx.inCount, tx.outCount))
+            # hash2intid(rawpk2hash160(output.pubkey)
+        f_tx.write('{},{},{},{},{}\n'.format(hashStr(tx.hash), amount, blktime2datetime(received_time), tx.inCount, tx.outCount))
 
-
-def toFile_tidy(received_time, Txs):
-    # run in Block.toString
-    f_tx = open('transactions.csv', 'w')
-    f_in = open('inputs_mapping.csv', 'w')
-    f_out = open('outputs.csv', 'w')
-    for tx in Txs:
-        for m, input in enumerate(tx.inputs):
-            f_in.write('{},{},{},{}\n'.format(hash2intid(tx.hash), m, hash2intid(input.prevhash), input.txOutId))
-        amount = 0
-        for n, output in enumerate(tx.outputs):
-            amount += output.value
-            f_out.write('{},{},{},{}\n'.format(hash2intid(tx.hash), n, output.value, hash2intid(rawpk2hash160(output.pubkey))))
-        f_tx.write('{},{},{},{},{}\n'.format(hash2intid(tx.hash), amount, blktime2datetime(received_time), tx.inCount, tx.outCount))
-
-def toFile(received_time, Txs):
-    # run in Block.toString
-    return toFile_untidy(received_time, Txs)
 
 class BlockHeader:
     def __init__(self, blockchain):

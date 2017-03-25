@@ -1,6 +1,21 @@
+"""
+Filename: blocktools.py
+Purpose: basic functions utilized by blockchain parser
+
+Authors:
+    * https://github.com/tenthirtyone/blocktools
+    * Peng Wu
+
+Licenses: BSD 3
+"""
+
+######
+# Section I
+# Author: https://github.com/tenthirtyone/blocktools
+######
+
 import struct
 import hashlib
-
 
 
 def uint1(stream):
@@ -47,30 +62,49 @@ def hashStr(bytebuffer):
     # return binascii.hexlify(pk_script)
     return ''.join(('%02x' % ord(a)) for a in bytebuffer)
 
-# modification by Peng
+
+######
+# Section II
+# Author: Peng Wu
+######
 
 def double_sha256(bytebuffer):
+    """
+    Dual SHA256 on raw byte string
+    """
     return hashlib.sha256(hashlib.sha256(bytebuffer).digest()).digest()
 
 
-def hash2intid(bytebuffer):
+def hashInt(bytebuffer):
+    """
+    Map a long hash string to an int smaller than power(2, 31)-1
+    """
     import binascii
     hex_dig = binascii.hexlify(bytebuffer)
     return int(hex_dig, 16) % 2147483647
 
 
 def rawpk2hash160(pk_script):
-    head = pk_script.find('\x14')+1
-    return pk_script[head:head+20]
+    """
+    Locate the raw 20-byte hash160 value of a public key right after 0x14
+    """
+    head = pk_script.find('\x14') + 1
+    return pk_script[head:head + 20]
 
 
 def rawpk2addr(pk_script):
-    import base58
+    """
+    Convert a raw bitcoin block script of public key to a common address
+    """
+    import base58  # reference program: base58.py
     return base58.hash_160_to_bc_address(rawpk2hash160(pk_script))
 
 
 def blktime2datetime(blktime):
-    # Current timestamp as seconds since 1970-01-01T00:00 UTC
+    """
+    Convert a bitcoin block timestamp integer to a datetime string.
+    Note that current timestamp as seconds since 1970-01-01T00:00 UTC.
+    """
     from datetime import timedelta, datetime
-    d = datetime(1970, 1, 1, 0, 0, 0) + timedelta(days=int(blktime)/86400, seconds=int(blktime)%86400)
+    d = datetime(1970, 1, 1, 0, 0, 0) + timedelta(days=int(blktime) / 86400, seconds=int(blktime) % 86400)
     return d.strftime('%Y-%m-%d-%H-%M-%S')

@@ -3,19 +3,10 @@ Usage:
 ~/spark/bin/spark-submit project_csds/blockparser/spark_mapaddr.py
 """
 
-# Initialize Timer
 import time
-
-start_time = time.time()
-
-# Initialize Spark Context: local multi-threads
 from pyspark import SparkConf, SparkContext
 
-conf = SparkConf().setMaster("local[4]").setAppName("mapinput")
-sc = SparkContext(conf=conf)
 
-
-# Loading files
 def parse_outputs(line):
     """
     schema:
@@ -38,12 +29,6 @@ def parse_inputs(line):
     return fields[0], (int(fields[2]), fields[3])
 
 
-outputs = sc.textFile('outputs.csv').map(parse_outputs).partitionBy(2).persist()
-inputs = sc.textFile('inputs.csv').map(parse_inputs).partitionBy(2).persist()
-
-# Transformations and/or Actions
-
-
 def one_to_one_tx(two_lists):
     inputs = two_lists[0]
     outputs = two_lists[1]
@@ -64,22 +49,37 @@ def one_to_one_tx(two_lists):
 
     return result
 
-final = inputs.cogroup(outputs).\
-                filter(lambda keyValue: len(keyValue[1][0]) != 0 and len(keyValue[1][1]) != 0).\
-                flatMapValues(one_to_one_tx)
-
-
-with open('addrs.csv', 'w') as f:
-    pass
-
 
 def formatted_print(keyValue):
     with open('addrs.csv', 'a') as f:
         f.write('{},{},{:.2f},{}\n'.format(keyValue[1][0][0], keyValue[1][0][1], keyValue[1][1], keyValue[0]))
 
-final.foreach(formatted_print)
 
-print("--- %s seconds ---" % (time.time() - start_time))
+def main():
+    # Initialize Timer
+    start_time = time.time()
+
+    # Initialize Spark Context: local multi-threads
+    conf = SparkConf().setMaster("local[4]").setAppName("mapinput")
+    sc = SparkContext(conf=conf)
+
+    # Load files
+    outputs = sc.textFile('outputs.csv').map(parse_outputs).partitionBy(2).persist()
+    inputs = sc.textFile('inputs.csv').map(parse_inputs).partitionBy(2).persist()
+
+    # Transformations and/or Actions
+    final = inputs.cogroup(outputs). \
+        filter(lambda keyValue: len(keyValue[1][0]) != 0 and len(keyValue[1][1]) != 0). \
+        flatMapValues(one_to_one_tx)
+
+    # Output file
+    with open('addrs.csv', 'w') as f:
+        pass
+    final.foreach(formatted_print)
+
+    # End Program
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
-
+if __name__ == "__main__":
+    main()
