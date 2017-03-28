@@ -51,7 +51,7 @@ def one_to_one_tx(two_lists):
 
 
 def formatted_print(keyValue):
-    with open('addrs.csv', 'a') as f:
+    with open('../../addrs.csv', 'a') as f:
         f.write('{},{},{:.2f},{}\n'.format(keyValue[1][0][0], keyValue[1][0][1], keyValue[1][1], keyValue[0]))
 
 
@@ -60,12 +60,12 @@ def main():
     start_time = time.time()
 
     # Initialize Spark Context: local multi-threads
-    conf = SparkConf().setMaster("local[4]").setAppName("mapinput")
+    conf = SparkConf().setMaster("local[4]").setAppName("mapaddr")
     sc = SparkContext(conf=conf)
 
     # Load files
-    outputs = sc.textFile('outputs.csv').map(parse_outputs).partitionBy(2).persist()
-    inputs = sc.textFile('inputs.csv').map(parse_inputs).partitionBy(2).persist()
+    outputs = sc.textFile('../../outputs.csv').map(parse_outputs).partitionBy(4)
+    inputs = sc.textFile('../../inputs.csv').map(parse_inputs).partitionBy(4)
 
     # Transformations and/or Actions
     final = inputs.cogroup(outputs). \
@@ -73,7 +73,7 @@ def main():
         flatMapValues(one_to_one_tx)
 
     # Output file
-    with open('addrs.csv', 'w') as f:
+    with open('../../addrs.csv', 'w') as f:
         pass
     final.foreach(formatted_print)
 
