@@ -2,22 +2,30 @@
 
 from pyspark import SparkConf, SparkContext
 
-conf = SparkConf().setMaster("local").setAppName("two_assumption")
+conf = SparkConf().setMaster("local[4]").setAppName("two_assumption")
 sc = SparkContext(conf = conf)
 
-## load data and parse
-## type transform
-rdd_addr = sc.textFile("addrs.csv")\
+########################
+# load data and parse
+########################
+
+## datatype transform
+rdd_addr = sc.textFile("addrs-large.csv")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[3], (x[0], x[1], float(x[2]))))
             ## key: hash , value: input_addr, output_addr, amount
 
-rdd_tx = sc.textFile("transactions.csv")\
+rdd_tx = sc.textFile("transactions-large.csv")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[0], (float(x[1]), int(x[3]), int(x[4]))))
             ## key: hash, value: amount, m, n
 
-## serial-control
+#############################
+# serial-control assumption
+#############################
+
+## In this part, we extract those addresses which are 1-1 in transactions
+
 def serial_control(rdd_tx, rdd_addr):
     serial_tx_hash = rdd_tx\
                     .filter(lambda x: x[1][1]==x[1][2]==1)\
@@ -31,9 +39,14 @@ def serial_control(rdd_tx, rdd_addr):
     return addr_pair
     # return an rdd contains sets: [set([addr_id, addr_id]),...,set([addr_id, addr_id])]
 
+## Addresses in a same set are from same user
 
+#############################
+## joint-control assumption
+#############################
 
-## joint-control
+## In this part, we extract those addresses are together serving as one input in a transaction
+
 def joint_control(rdd_addr):
 
     joint_user = rdd_addr\
@@ -46,41 +59,64 @@ def joint_control(rdd_addr):
     return joint_user
     # return an rdd contains sets: [set([addr_id, addr_id]),...,set([addr_id, addr_id])]
 
+## Addresses in a same set are from same user
+
+######################
+# 2 assumptions merge
+######################
+
+## In this part, we union the results above by their intersection.
+## We come up with the final user-dict here
+
 user_merged = serial_control(rdd_tx, rdd_addr)\
             .union(joint_control(rdd_addr))\
             .collect() #.persist()
 
 ## union the intersected sets into a big set
-#def user_set_union(user_merged):
+
+############################################## python object begins ###################################
+###################
+# user set merge
+###################
 
 user_n = len(user_merged)
 
-visited = [0] * user_n # init all state as existing
+visited = [0] * user_n # init all sets' states as 'not visited'
 # visited state:
 # 0: not visited set
 # 1: visited, fully checked sets
 # 2: visited, deleted set
 
 for i in range(user_n): # the first set i
-    if visited[i] == 0: # if this set i hasn't been visited
+    if visited[i] == 0: # if this set i hasn't been visited, then visit
 
         for j in range(i + 1, user_n): # all other following sets j
-            if visited[j] == 0: # if this set j hasn't been visited
-                if (user_merged[i] & user_merged[j]): # if there are intersected
+            if visited[j] == 0: # if this set j hasn't been visited, then visit
+                if (user_merged[i] & user_merged[j]): # if there are intersected, then union them
+
                     user_merged[i] = user_merged[i] | user_merged[j] # union set j's elements into the first set i
                     visited[j] = 2 # delete this set j
+
                 #else: if there are not intersected then continue the loop
+
             #else: if the set j is deleted or  then go on to the next set j+1
 
         # inner loop finished, meaning that the set i's comparison is fully checked, no other sets have common elements with it, then mark it as 1
         visited[i] = 1
+
     #else: the set i is deleted, we don't need to do anything, just go on with the loop.
 
 # we only need those expanded sets whose state is marked as 1
 user_list = []
 for i in range(user_n):
     if (visited[i] == 1):
-        user_list.append(list(user_merged[i]))
+        user_list.append(list(user_merged[i])) # here in the list are all the user clusters
+
+############################################### python object ends ####################################
+
+##############################
+# generate the user_dict table
+##############################
 
 # store it into an rdd
 user_list_rdd = sc\
@@ -89,28 +125,48 @@ user_list_rdd = sc\
             .map(lambda x: (x[1],x[0]))\
             .flatMapValues(lambda x: x)\
             .map(lambda x: (x[1], x[0]))
+# zip with unique id: [([address1, address2, ...], unique id),...]
+# map key: unique user id , value: address list
+# flatmap : turn address list in value into one address
+# change key and value,  key: address, value: user id
 
-user_dict = user_list_rdd.collect()
+# results are now in user_list_rdd.collect()
+# format: list [address, id]
+# one address and the user's id it belongs to
+
+############################################## python object begins #####################################
+# convert the list into dictionary for faster query later
 dict_user = {}
-for (key, val) in user_dict:
+for (key, val) in user_list_rdd.collect():
     dict_user[key] = val
 
-print dict_user
+# format: dict {key: address, value: user id}
+
+#############################
+# generate the user_tx graph
+#############################
 
 dict_edge = {}
 
+# go through every record in addr table
 for record in rdd_addr.values().toLocalIterator():
     if record[0] in dict_user:
         if record[1] in dict_user and dict_user[record[0]] != dict_user[record[1]]:
             dict_edge[(dict_user[record[0]], dict_user[record[1]])] = record[2]
+# if we found that there is a transaction record is between different users in our user dictionary, then we add this tx amount into the edge between these two users.
 
-print dict_edge
+# format: {key: (user id1, user id2), value: transaction amount}
+# directed graph, nodes are the user ids, edges are the transactions with value.
+############################################## python object ends ########################################
+# write into csv
 
 
+with open('user_dict.csv', 'w') as f1:
+    for key in dict_user.keys():
+        f1.write(str(key) + ',' + str(dict_user[key]) + '\n')
+f1.close()
 
-
-#reuser_flatten.countByValue()
-
-
-#for line in user_merged.collect():
- #   print line
+with open('user_tx_graph.csv', 'w') as f2:
+    for key in dict_edge.keys():
+        f2.write(str(key[0])+ ',' + str(key[1]) + ',' + str(dict_edge[key]) + '\n')
+f2.close()
