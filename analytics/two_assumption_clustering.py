@@ -8,14 +8,14 @@ sc = SparkContext(conf = conf)
 ########################
 # load data and parse
 ########################
-
+filefolder = "../../"
 ## datatype transform
-rdd_addr = sc.textFile("addrs-large.csv")\
+rdd_addr = sc.textFile(filefolder+"addrs.csv")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[3], (x[0], x[1], float(x[2]))))
             ## key: hash , value: input_addr, output_addr, amount
 
-rdd_tx = sc.textFile("transactions-large.csv")\
+rdd_tx = sc.textFile(filefolder+"transactions.csv")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[0], (float(x[1]), int(x[3]), int(x[4]))))
             ## key: hash, value: amount, m, n
@@ -28,7 +28,7 @@ rdd_tx = sc.textFile("transactions-large.csv")\
 
 def serial_control(rdd_tx, rdd_addr):
     serial_tx_hash = rdd_tx\
-                    .filter(lambda x: x[1][1]==x[1][2]==1)\
+                    .filter(lambda x: x[1][1]==1 and x[1][2]==1)\
                     .mapValues(lambda value: value[0])
 
     addr_pair = rdd_addr\
@@ -161,12 +161,12 @@ for record in rdd_addr.values().toLocalIterator():
 # write into csv
 
 
-with open('user_dict.csv', 'w') as f1:
+with open(filefolder+'user_dict.csv', 'w') as f1:
     for key in dict_user.keys():
         f1.write(str(key) + ',' + str(dict_user[key]) + '\n')
 f1.close()
 
-with open('user_tx_graph.csv', 'w') as f2:
+with open(filefolder+'user_tx_graph.csv', 'w') as f2:
     for key in dict_edge.keys():
         f2.write(str(key[0])+ ',' + str(key[1]) + ',' + str(dict_edge[key]) + '\n')
 f2.close()
