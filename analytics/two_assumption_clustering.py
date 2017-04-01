@@ -150,9 +150,10 @@ dict_edge = defaultdict(float)
 
 # go through every record in addr table
 for record in rdd_addr.values().toLocalIterator():
-    if record[0] in dict_user:
-        if record[1] in dict_user and dict_user[record[0]] != dict_user[record[1]]:
-            dict_edge[(dict_user[record[0]], dict_user[record[1]])] += record[2]
+    try:
+        dict_edge[(dict_user[record[0]], dict_user[record[1]])] += record[2]
+    except KeyError:
+        pass
 # if we found that there is a transaction record is between different users in our user dictionary, then we add this tx amount into the edge between these two users.
 
 # format: {key: (user id1, user id2), value: transaction amount}
