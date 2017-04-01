@@ -54,7 +54,7 @@ def main():
         #print 'Usage: $SPARK_PATH/spark-submit spark_parser.py filename1 filename2 ...'
     #else:
 
-    rawfiles = sc.parallelize(['../../blk00{}.dat'.format(d) for d in [799, 800]])
+    rawfiles = sc.parallelize(['../../blk00{}.dat'.format(d) for d in [800]])
 
     # Transformations and/or Actions
     blocks = rawfiles.map(lambda filename: parse(open(filename))).flatMap(lambda x:x)
