@@ -145,14 +145,14 @@ for (key, val) in user_list_rdd.collect():
 #############################
 # generate the user_tx graph
 #############################
-
-dict_edge = {}
+from collections import defaultdict
+dict_edge = defaultdict(float)
 
 # go through every record in addr table
 for record in rdd_addr.values().toLocalIterator():
     if record[0] in dict_user:
         if record[1] in dict_user and dict_user[record[0]] != dict_user[record[1]]:
-            dict_edge[(dict_user[record[0]], dict_user[record[1]])] = record[2]
+            dict_edge[(dict_user[record[0]], dict_user[record[1]])] += record[2]
 # if we found that there is a transaction record is between different users in our user dictionary, then we add this tx amount into the edge between these two users.
 
 # format: {key: (user id1, user id2), value: transaction amount}
@@ -164,9 +164,8 @@ for record in rdd_addr.values().toLocalIterator():
 with open(filefolder+'user_dict.csv', 'w') as f1:
     for key in dict_user.keys():
         f1.write(str(key) + ',' + str(dict_user[key]) + '\n')
-f1.close()
+
 
 with open(filefolder+'user_tx_graph.csv', 'w') as f2:
     for key in dict_edge.keys():
         f2.write(str(key[0])+ ',' + str(key[1]) + ',' + str(dict_edge[key]) + '\n')
-f2.close()
