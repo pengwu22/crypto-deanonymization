@@ -10,12 +10,12 @@ sc = SparkContext(conf = conf)
 ########################
 filefolder = "../../"
 ## datatype transform
-rdd_addr = sc.textFile(filefolder+"addrs-large.csv", minPartitions=4)\
+rdd_addr = sc.textFile(filefolder+"addrs-large.csv")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[3], (x[0], x[1], float(x[2]))))
             ## key: hash , value: input_addr, output_addr, amount
 
-rdd_tx = sc.textFile(filefolder+"transactions-large.csv", minPartitions=4)\
+rdd_tx = sc.textFile(filefolder+"transactions-large.csv")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[0], (float(x[1]), int(x[3]), int(x[4]))))
             ## key: hash, value: amount, m, n
@@ -124,7 +124,7 @@ user_list_rdd = sc\
             .zipWithUniqueId()\
             .map(lambda x: (x[1], x[0]))\
             .flatMapValues(lambda x: x)\
-            .map(lambda x: (x[1], x[0]))
+            .map(lambda x: (x[1], x[0]))\
 # zip with unique id: [([address1, address2, ...], unique id),...]
 # map key: unique user id , value: address list
 # flatmap : turn address list in value into one address
@@ -135,36 +135,36 @@ user_list_rdd = sc\
 # one address and the user's id it belongs to
 
 ############################################## python object begins #####################################
-# convert the list into dictionary for faster query later
-dict_user = user_list_rdd.collectAsMap()
 
 # format: dict {key: address, value: user id}
 
 #############################
 # generate the user_tx graph
 #############################
-from collections import defaultdict
-dict_edge = defaultdict(float)
+
+final = rdd_addr.values()\
+    .map(lambda x: (x[0], (x[1], x[2])))\
+    .join(user_list_rdd).values()\
+    .map(lambda x: (x[0][0], (x[0][1], x[1])))\
+    .join(user_list_rdd).values()\
+    .map(lambda x: ((x[0][1], x[1]), x[0][0]))\
+    .reduceByKey(lambda x,y: x+y)\
+
 
 # go through every record in addr table
-for record in rdd_addr.values().toLocalIterator():
-    try:
-        dict_edge[(dict_user[record[0]], dict_user[record[1]])] += record[2]
-    except KeyError:
-        pass
+
 # if we found that there is a transaction record is between different users in our user dictionary, then we add this tx amount into the edge between these two users.
 
 # format: {key: (user id1, user id2), value: transaction amount}
 # directed graph, nodes are the user ids, edges are the transactions with value.
 ############################################## python object ends ########################################
 # write into csv
+with open(filefolder + 'user_tx_graph-p.csv', 'w') as f2:
+    pass
+# convert the list into dictionary for faster query later
+def formatted_printedge(utx):
+    with open(filefolder + 'user_tx_graph-p.csv', 'a') as f2:
+        f2.write('{},{},{}\n'.format(utx[0][0], utx[0][1], utx[1]))
 
+final.foreach(formatted_printedge)
 
-with open(filefolder+'user_dict.csv', 'w') as f1:
-    for key in dict_user.keys():
-        f1.write(str(key) + ',' + str(dict_user[key]) + '\n')
-
-
-with open(filefolder+'user_tx_graph.csv', 'w') as f2:
-    for key in dict_edge.keys():
-        f2.write(str(key[0])+ ',' + str(key[1]) + ',' + str(dict_edge[key]) + '\n')

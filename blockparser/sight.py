@@ -63,7 +63,7 @@ def main():
         print 'Usage: sight.py filename'
     else:
         with open(sys.argv[1], 'rb') as blockchain:
-            parse(blockchain)
+            parse_dates(blockchain)
 
 
 if __name__ == '__main__':
