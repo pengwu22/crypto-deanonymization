@@ -68,12 +68,12 @@ if __name__ == "__main__":
     start_time = time.time()
 
     if len(sys.argv) == 2:
-        if sys.argv[1] == 'local[*]' or sys.argv[1] == 'yarn-cluster':
+        if sys.argv[1] == 'local[*]' or sys.argv[1] == 'yarn':
             main(argv_setMaster = sys.argv[1])
     else:
         print "\n\tUSAGE:\n\
                 spark-submit spark_mapinput.py local[*]\
-                spark-submit spark_mapinput.py yarn-cluster\
+                spark-submit spark_mapinput.py yarn\
               "
 
     print("--- %s seconds ---" % (time.time() - start_time))
