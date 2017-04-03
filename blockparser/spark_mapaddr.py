@@ -1,10 +1,12 @@
 """
-Usage:
-~/spark/bin/spark-submit project_csds/blockparser/spark_mapaddr.py
+Author: Peng Wu
+License: MIT
 """
 
-import time
+# Initialize Spark Context: local multi-threads
 from pyspark import SparkConf, SparkContext
+
+output_folder = './csv/'
 
 
 def parse_outputs(line):
@@ -50,22 +52,15 @@ def one_to_one_tx(two_lists):
     return result
 
 
-def formatted_print(keyValue):
-    with open('../../addrs.csv', 'a') as f:
-        f.write('{},{},{:.2f},{}\n'.format(keyValue[1][0][0], keyValue[1][0][1], keyValue[1][1], keyValue[0]))
-
-
-def main():
-    # Initialize Timer
-    start_time = time.time()
+def main(argv_setMaster):
 
     # Initialize Spark Context: local multi-threads
-    conf = SparkConf().setMaster("local[4]").setAppName("mapaddr")
+    conf = SparkConf().setMaster(argv_setMaster).setAppName("mapaddr")
     sc = SparkContext(conf=conf)
 
     # Load files
-    outputs = sc.textFile('../../outputs.csv').map(parse_outputs).partitionBy(4)
-    inputs = sc.textFile('../../inputs.csv').map(parse_inputs).partitionBy(4)
+    outputs = sc.textFile(output_folder+'outputs.csv').map(parse_outputs).persist()
+    inputs = sc.textFile(output_folder+'inputs.csv').map(parse_inputs).persist()
 
     # Transformations and/or Actions
     final = inputs.cogroup(outputs). \
@@ -73,13 +68,29 @@ def main():
         flatMapValues(one_to_one_tx)
 
     # Output file
-    with open('../../addrs.csv', 'w') as f:
+    with open(output_folder+'addrs.csv', 'w') as f:
         pass
+    def formatted_print(keyValue):
+        with open(output_folder+'addrs.csv', 'a') as f:
+            f.write('{},{},{:.2f},{}\n'.format(keyValue[1][0][0], keyValue[1][0][1], keyValue[1][1], keyValue[0]))
     final.foreach(formatted_print)
 
-    # End Program
-    print("--- %s seconds ---" % (time.time() - start_time))
+
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    import time
+    # Initialize Timer
+    start_time = time.time()
+
+    if len(sys.argv) == 2:
+        if sys.argv[1] == 'local[*]' or sys.argv[1] == 'yarn-cluster':
+            main(argv_setMaster = sys.argv[1])
+    else:
+        print "\n\tUSAGE:\n\
+                spark-submit spark_mapaddr.py local[*]\
+                spark-submit spark_mapaddr.py yarn-cluster\
+              "
+    # End Program
+    print("--- %s seconds ---" % (time.time() - start_time))
