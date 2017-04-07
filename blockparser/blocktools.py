@@ -107,4 +107,4 @@ def blktime2datetime(blktime):
     """
     from datetime import timedelta, datetime
     d = datetime(1970, 1, 1, 0, 0, 0) + timedelta(days=int(blktime) / 86400, seconds=int(blktime) % 86400)
-    return d.strftime('%Y-%m-%d-%H-%M-%S')
+    return d.strftime('%Y-%m-%dT%H:%M:%S')
