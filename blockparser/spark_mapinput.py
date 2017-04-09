@@ -38,13 +38,13 @@ def main(argv_setMaster):
         return (fields[2], fields[3]), (fields[0], fields[1])
 
 
-    outputs = sc.textFile(output_folder+'outputs.csv').map(parse_outputs).persist()
-    inputs = sc.textFile(output_folder+'inputs_mapping.csv').map(parse_inputsmapping).persist()
+    outputs = sc.textFile(output_folder+'outputs.csv').map(parse_outputs)
+    inputs = sc.textFile(output_folder+'inputs_mapping.csv').map(parse_inputsmapping)
 
     # Transformations and/or Actions
 
     # op: transformation + action
-    metafinal = inputs.join(outputs)
+    metafinal = inputs.join(outputs).persist()
     final = metafinal.values()
 
     # op: transformation

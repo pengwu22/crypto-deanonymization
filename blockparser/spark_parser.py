@@ -66,6 +66,8 @@ def main(argv_filenames, argv_setMaster):
             f.write(block[2])
     blocks.foreach(formatted_print)
 
+    with open(output_folder + 'README.md', 'w') as f:
+        f.write('\n'.join(argv_filenames))
     # End Program
 
 
