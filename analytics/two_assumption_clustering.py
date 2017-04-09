@@ -8,7 +8,8 @@ sc = SparkContext(conf = conf)
 ########################
 # load data and parse
 ########################
-filefolder = "../../"
+filefolder = "../blockparser/csv/"
+
 ## datatype transform
 rdd_addr = sc.textFile(filefolder+"addrs.csv")\
             .map(lambda line: line.split(','))\
