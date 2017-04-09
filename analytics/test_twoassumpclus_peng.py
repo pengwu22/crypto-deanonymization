@@ -10,12 +10,12 @@ sc = SparkContext(conf = conf)
 ########################
 filefolder = "../../"
 ## datatype transform
-rdd_addr = sc.textFile(filefolder+"addrs-large.csv")\
+rdd_addr = sc.textFile(filefolder+"addrs-large.csv:2017-03-12")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[3], (x[0], x[1], float(x[2]))))
             ## key: hash , value: input_addr, output_addr, amount
 
-rdd_tx = sc.textFile(filefolder+"transactions-large.csv")\
+rdd_tx = sc.textFile(filefolder+"transactions-large.csv:2017-03-12")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[0], (float(x[1]), int(x[3]), int(x[4]))))
             ## key: hash, value: amount, m, n
@@ -158,12 +158,12 @@ final = rdd_addr.values()\
 # format: {key: (user id1, user id2), value: transaction amount}
 # directed graph, nodes are the user ids, edges are the transactions with value.
 ############################################## python object ends ########################################
-# write into csv
-with open(filefolder + 'user_tx_graph-p.csv', 'w') as f2:
+# write into csv:2017-03-12
+with open(filefolder + 'user_tx_graph-p.csv:2017-03-12', 'w') as f2:
     pass
 # convert the list into dictionary for faster query later
 def formatted_printedge(utx):
-    with open(filefolder + 'user_tx_graph-p.csv', 'a') as f2:
+    with open(filefolder + 'user_tx_graph-p.csv:2017-03-12', 'a') as f2:
         f2.write('{},{},{}\n'.format(utx[0][0], utx[0][1], utx[1]))
 
 final.foreach(formatted_printedge)
