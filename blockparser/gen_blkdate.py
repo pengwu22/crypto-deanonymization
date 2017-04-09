@@ -39,7 +39,7 @@ def main():
     if len(sys.argv) < 2:
         print 'Usage: gen_blkdate.py folderpath'
     else:
-        output_file = open('blkdate.csv','w')
+        output_file = open('blkdate.txt','w')
         import os
         from datetime import datetime, date
         datetime_format = '%Y-%m-%dT%H:%M:%S'
