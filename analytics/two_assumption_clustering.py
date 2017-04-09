@@ -2,7 +2,7 @@
 
 from pyspark import SparkConf, SparkContext
 
-conf = SparkConf().setMaster("local[4]").setAppName("two_assumption")
+conf = SparkConf().setMaster("local[*]").setAppName("two_assumption")
 sc = SparkContext(conf = conf)
 
 ########################
@@ -10,12 +10,12 @@ sc = SparkContext(conf = conf)
 ########################
 filefolder = "../../"
 ## datatype transform
-rdd_addr = sc.textFile(filefolder+"addrs-large.csv:2017-03-12", minPartitions=4)\
+rdd_addr = sc.textFile(filefolder+"addrs.csv")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[3], (x[0], x[1], float(x[2]))))
             ## key: hash , value: input_addr, output_addr, amount
 
-rdd_tx = sc.textFile(filefolder+"transactions-large.csv:2017-03-12", minPartitions=4)\
+rdd_tx = sc.textFile(filefolder+"transactions.csv")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[0], (float(x[1]), int(x[3]), int(x[4]))))
             ## key: hash, value: amount, m, n
@@ -160,11 +160,11 @@ for record in rdd_addr.values().toLocalIterator():
 # write into csv:2017-03-12
 
 
-with open(filefolder+'user_dict.csv:2017-03-12', 'w') as f1:
+with open(filefolder+'user_node.csv', 'w') as f1:
     for key in dict_user.keys():
         f1.write(str(key) + ',' + str(dict_user[key]) + '\n')
 
 
-with open(filefolder+'user_tx_graph.csv:2017-03-12', 'w') as f2:
+with open(filefolder+'user_edge.csv', 'w') as f2:
     for key in dict_edge.keys():
         f2.write(str(key[0])+ ',' + str(key[1]) + ',' + str(dict_edge[key]) + '\n')
