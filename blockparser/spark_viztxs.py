@@ -20,7 +20,7 @@ ip_api = "https://ipinfo.io/{}/json"
 conf = SparkConf().setMaster('yarn').setAppName("parser")
 sc = SparkContext(conf=conf)
 
-prerow = sc.textFile('csv/transactions.csv').map(lambda line:line.split(','))
+prerow = sc.textFile('csv:2017-03-12/transactions.csv:2017-03-12').map(lambda line:line.split(','))
 
 
 def add_info(row):
@@ -43,7 +43,7 @@ def add_info(row):
 
 row = prerow.map(add_info)
 
-row.saveAsTextFile('csv/output')
+row.saveAsTextFile('csv:2017-03-12/output')
 
 
 

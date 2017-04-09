@@ -15,11 +15,11 @@ import pycountry
 tx_api = "https://blockchain.info/rawtx/"
 ip_api = "https://ipinfo.io/{}/json"
 
-output_txnode = open('csv/viz_txnode.csv', 'w')
-#output_txedge = open('csv/viz_txedge.csv', 'w')
+output_txnode = open('csv:2017-03-12/viz_txnode.csv:2017-03-12', 'w')
+#output_txedge = open('csv:2017-03-12/viz_txedge.csv:2017-03-12', 'w')
 
 txnode_writer = csv.writer(output_txnode)
-#txedge_writer = csv.writer(output_txedge)
+#txedge_writer = csv:2017-03-12.writer(output_txedge)
 
 
 def add_info(row):
@@ -39,7 +39,7 @@ def add_info(row):
     return ','.join(row)+'\n'
 
 
-with open('csv/transactions.csv') as f:
+with open('csv:2017-03-12/transactions.csv:2017-03-12') as f:
     reader = csv.reader(f)
     for row in reader:
         print reader.line_num

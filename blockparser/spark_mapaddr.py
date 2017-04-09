@@ -6,7 +6,7 @@ License: MIT
 # Initialize Spark Context: local multi-threads
 from pyspark import SparkConf, SparkContext
 
-output_folder = './csv/'
+output_folder = './csv:2017-03-12/'
 
 
 def parse_outputs(line):
@@ -59,8 +59,8 @@ def main(argv_setMaster):
     sc = SparkContext(conf=conf)
 
     # Load files
-    outputs = sc.textFile(output_folder+'outputs.csv').map(parse_outputs).persist()
-    inputs = sc.textFile(output_folder+'inputs.csv').map(parse_inputs).persist()
+    outputs = sc.textFile(output_folder+'outputs.csv:2017-03-12').map(parse_outputs).persist()
+    inputs = sc.textFile(output_folder+'inputs.csv:2017-03-12').map(parse_inputs).persist()
 
     # Transformations and/or Actions
     final = inputs.cogroup(outputs). \
@@ -68,10 +68,10 @@ def main(argv_setMaster):
         flatMapValues(one_to_one_tx)
 
     # Output file
-    with open(output_folder+'addrs.csv', 'w') as f:
+    with open(output_folder+'addrs.csv:2017-03-12', 'w') as f:
         pass
     def formatted_print(keyValue):
-        with open(output_folder+'addrs.csv', 'a') as f:
+        with open(output_folder+'addrs.csv:2017-03-12', 'a') as f:
             f.write('{},{},{:.2f},{}\n'.format(keyValue[1][0][0], keyValue[1][0][1], keyValue[1][1], keyValue[0]))
     final.foreach(formatted_print)
 

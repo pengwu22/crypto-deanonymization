@@ -18,9 +18,9 @@ from blocktools import *
 
 def toFile(received_time, Txs):
     # run in Block.toString
-    f_tx = open('transactions.csv', 'w')
-    f_in = open('inputs_mapping.csv', 'w')
-    f_out = open('outputs.csv', 'w')
+    f_tx = open('transactions.csv:2017-03-12', 'w')
+    f_in = open('inputs_mapping.csv:2017-03-12', 'w')
+    f_out = open('outputs.csv:2017-03-12', 'w')
     for tx in Txs:
         for m, input in enumerate(tx.inputs):
             f_in.write('{},{},{},{}\n'.format(hashStr(tx.hash), m, hashStr(input.prevhash), input.txOutId))

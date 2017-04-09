@@ -6,7 +6,7 @@ License: MIT
 # Initialize Spark Context: local multi-threads
 from pyspark import SparkConf, SparkContext
 
-output_folder = './csv/'
+output_folder = './csv:2017-03-12/'
 
 
 def main(argv_setMaster):
@@ -38,8 +38,8 @@ def main(argv_setMaster):
         return (fields[2], fields[3]), (fields[0], fields[1])
 
 
-    outputs = sc.textFile(output_folder+'outputs.csv').map(parse_outputs)
-    inputs = sc.textFile(output_folder+'inputs_mapping.csv').map(parse_inputsmapping)
+    outputs = sc.textFile(output_folder+'outputs.csv:2017-03-12').map(parse_outputs)
+    inputs = sc.textFile(output_folder+'inputs_mapping.csv:2017-03-12').map(parse_inputsmapping)
 
     # Transformations and/or Actions
 
@@ -53,17 +53,17 @@ def main(argv_setMaster):
 
 
     # final.map(lambda x:(x[0][0],x[0][1],x[1][0],x[1][1])).saveAsTextFile("input_final")
-    with open(output_folder+'inputs.csv', 'w') as f:
+    with open(output_folder+'inputs.csv:2017-03-12', 'w') as f:
         pass
     def formatted_print(keyValue):
-        with open(output_folder+'inputs.csv', 'a') as f:
+        with open(output_folder+'inputs.csv:2017-03-12', 'a') as f:
             f.write('{},{},{},{}\n'.format(keyValue[0][0], keyValue[0][1], keyValue[1][0], keyValue[1][1]))
     final.foreach(formatted_print)
 
-    with open(output_folder+'viz_txedge.csv', 'w') as f:
+    with open(output_folder+'viz_txedge.csv:2017-03-12', 'w') as f:
         pass
     def formatted_print_2(keyValue):
-        with open(output_folder+'viz_txedge.csv', 'a') as f:
+        with open(output_folder+'viz_txedge.csv:2017-03-12', 'a') as f:
             f.write('{},{},{}\n'.format(keyValue[0][0], keyValue[1][1][0], keyValue[1][0][0]))
     metafinal.foreach(formatted_print_2)
 

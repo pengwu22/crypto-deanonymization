@@ -5,6 +5,21 @@ BSD开源协议是一个给于使用者很大自由的协议。可以自由的�
 3． 不可以用开源代码的作者/机构名字和原来产品的名字做市场推广。
 BSD代码鼓励代码共享，但需要尊重代码作者的著作权。BSD由于允许使用者修改和重新发布代码，也允许使用或在BSD代码上开发商业软件发布和销售，因此是对商业集成很友好的协议。而很多的公司企业在选用开源产品的时候都首选BSD协议，因为可以完全控制这些第三方的代码，在必要的时候可以修改或者二次开发。
 
+## How to use it?
+
+* Dependency
+base58.py
+blocktools.py
+block.py
+
+* Data Pipline
+```
+spark-submit spark_parser.py local[*] filepath1 filepath ...
+spark-submit spark_mapinput.py local[*]
+spark-submit sprk_mapaddr.py local[*]
+```
+
+
 
 ## Block Chain Tools
 
