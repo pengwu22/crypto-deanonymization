@@ -39,6 +39,8 @@ def main():
     if len(sys.argv) < 2:
         print 'Usage: gen_blkdate.py folderpath'
     else:
+        with open('blkdate.txt', 'w') as output_file:
+            pass
 
         import os
         from datetime import datetime, date
@@ -62,7 +64,7 @@ def main():
                                                                blockinfo[2],
                                                                os.path.getsize(folder_path + file_path)))
 
-                        with open('blkdate.txt','w') as output_file:
+                        with open('blkdate.txt','a') as output_file:
                             output_file.write('{},{},{},{}\n'.format(blockinfo[0].split('T')[0],
                                                                      blockinfo[1],
                                                                      blockinfo[2],
