@@ -39,14 +39,14 @@ def main():
     if len(sys.argv) < 2:
         print 'Usage: gen_blkdate.py folderpath'
     else:
-        output_file = open('blkdate.txt','w')
+
         import os
         from datetime import datetime, date
         datetime_format = '%Y-%m-%dT%H:%M:%S'
         curdate = date(2000,1,1)
 
         folder_path = sys.argv[1]
-        files = [filename for filename in os.listdir(folder_path) if filename.startswith('blk')]
+        files = sorted([filename for filename in os.listdir(folder_path) if filename.startswith('blk')])
 
         for file_path in files:
             with open(folder_path+file_path, 'rb') as blockchain:
@@ -61,11 +61,14 @@ def main():
                                                                blockinfo[1],
                                                                blockinfo[2],
                                                                os.path.getsize(folder_path + file_path)))
-                        output_file.write('{},{},{},{}\n'.format(blockinfo[0].split('T')[0],
-                                                               blockinfo[1],
-                                                               blockinfo[2],
-                                                               os.path.getsize(folder_path + file_path)))
-        output_file.close()
+
+                        with open('blkdate.txt','w') as output_file:
+                            output_file.write('{},{},{},{}\n'.format(blockinfo[0].split('T')[0],
+                                                                     blockinfo[1],
+                                                                     blockinfo[2],
+                                                                     os.path.getsize(folder_path + file_path)))
+            if '810' in file_path:
+                break
 
 
 if __name__ == '__main__':
