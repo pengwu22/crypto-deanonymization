@@ -50,7 +50,7 @@ def parse_dates(blockchain):
         continueParsing = block.continueParsing
         if continueParsing:
             # print '#',str(block.blockHeader.time)
-            print "{},{}".format(blktime2datetime(str(block.blockHeader.time)), blockchain.name)
+            print "{},{},{}".format(blktime2datetime(str(block.blockHeader.time)), 'blk'+blockchain.name.split('blk')[-1], blockchain.tell())
         counter += 1
 
     print ''
