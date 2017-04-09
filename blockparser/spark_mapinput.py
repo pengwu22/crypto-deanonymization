@@ -44,7 +44,8 @@ def main(argv_setMaster):
     # Transformations and/or Actions
 
     # op: transformation + action
-    final = inputs.join(outputs).values()
+    metafinal = inputs.join(outputs)
+    final = metafinal.values()
 
     # op: transformation
     # UTXOs = outputs.subtractByKey(inputs)
@@ -58,6 +59,13 @@ def main(argv_setMaster):
         with open(output_folder+'inputs.csv', 'a') as f:
             f.write('{},{},{},{}\n'.format(keyValue[0][0], keyValue[0][1], keyValue[1][0], keyValue[1][1]))
     final.foreach(formatted_print)
+
+    with open(output_folder+'viz_txedge.csv', 'w') as f:
+        pass
+    def formatted_print_2(keyValue):
+        with open(output_folder+'viz_txedge.csv', 'a') as f:
+            f.write('{},{},{}\n'.format(keyValue[0][0], keyValue[1][1][0], keyValue[1][0][0]))
+    metafinal.foreach(formatted_print_2)
 
 
 if __name__ == "__main__":
