@@ -6,12 +6,12 @@ def update_data():
     r_latest = requests.get('https://blockchain.info/latestblock')
     latest_height = r_latest.json()[u'height']
 
-    if not path.isfile('ipinfo_db.csv'):
-        fd = open('ipinfo_db.csv', 'w')
+    if not path.isfile('ipinfo_db.csv:2017-03-12'):
+        fd = open('ipinfo_db.csv:2017-03-12', 'w')
         fd.write("block_hash" + "," + "relayed_ip" + "," + "tx_count" + "," + "block_index" + "\n")
         fd.close()
 
-    fd = open('ipinfo_db.csv', 'r+')
+    fd = open('ipinfo_db.csv:2017-03-12', 'r+')
     line = len(fd.readlines())
     new_block_index = []    
     for i in range(line, latest_height + 1):
@@ -35,7 +35,7 @@ update_data()
 
 def cnt_tx_per_ip():
     import csv
-    with open('ipinfo_db.csv', 'rb') as fd:
+    with open('ipinfo_db.csv:2017-03-12', 'rb') as fd:
         reader = csv.reader(fd)
         your_list = list(reader)
 

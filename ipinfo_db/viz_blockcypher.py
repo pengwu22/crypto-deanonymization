@@ -47,7 +47,7 @@ while len(tx_ids) > 0:
         #[u'loc', u'city', u'country', u'region']#
 
 
-        with open("viz_txs.csv","a") as f:
+        with open("viz_txs.csv:2017-03-12","a") as f:
             f.write("{},{},{},{},{},{},{},{},{}\n".format(tx_datetime, tx_geo['loc'], tx_geo['city'], tx_geo['region'], tx_geo['country'], tx['total'], tx['vin_sz'], tx['vout_sz'], tx_hash))
 
 
