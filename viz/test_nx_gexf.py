@@ -3,7 +3,7 @@ import networkx as nx
 
 G= nx.Graph()
 
-with open('../../user_tx_graph.csv') as f:
+with open('../../user_tx_graph.csv:2017-03-12') as f:
     reader = csv.reader(f)
 
     for row in reader:
