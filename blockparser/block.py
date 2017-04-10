@@ -16,21 +16,6 @@ Licenses: BSD 3
 
 from blocktools import *
 
-def toFile(received_time, Txs):
-    # run in Block.toString
-    f_tx = open('transactions.csv:2017-03-12', 'w')
-    f_in = open('inputs_mapping.csv:2017-03-12', 'w')
-    f_out = open('outputs.csv:2017-03-12', 'w')
-    for tx in Txs:
-        for m, input in enumerate(tx.inputs):
-            f_in.write('{},{},{},{}\n'.format(hashStr(tx.hash), m, hashStr(input.prevhash), input.txOutId))
-        amount = 0
-        for n, output in enumerate(tx.outputs):
-            amount += output.value
-            f_out.write('{},{},{},{}\n'.format(hashStr(tx.hash), n, output.value, rawpk2addr(output.pubkey)))
-            # hash2intid(rawpk2hash160(output.pubkey)
-        f_tx.write('{},{},{},{},{}\n'.format(hashStr(tx.hash), amount, blktime2datetime(received_time), tx.inCount, tx.outCount))
-
 
 class BlockHeader:
     def __init__(self, blockchain):
@@ -117,7 +102,6 @@ class Block:
         for t in self.Txs:
             pass
             #t.toString()
-        toFile(self.blockHeader.time, self.Txs)
 
     def toMemory(self):
         inputrows = ''
@@ -125,13 +109,23 @@ class Block:
         txrows = ''
         for tx in self.Txs:
             for m, input in enumerate(tx.inputs):
-                inputrows+=('{},{},{},{}\n'.format(hashStr(tx.hash), m, hashStr(input.prevhash), input.txOutId))
+                inputrows+=('{},{},{},{},{}\n'.format(hashStr(tx.hash),
+                                                   m,
+                                                   hashStr(input.prevhash),
+                                                   input.txOutId,
+                                                   blktime2datetime(self.blockHeader.time)))
             amount = 0
             for n, output in enumerate(tx.outputs):
                 amount += output.value
-                outputrows+=('{},{},{},{}\n'.format(hashStr(tx.hash), n, output.value, rawpk2addr(output.pubkey)))
-            txrows+=('{},{},{},{},{}\n'.format(hashStr(tx.hash), amount, blktime2datetime(self.blockHeader.time), tx.inCount,
-                                                 tx.outCount))
+                outputrows+=('{},{},{},{}\n'.format(hashStr(tx.hash),
+                                                    n,
+                                                    output.value,
+                                                    rawpk2addr(output.pubkey)))
+            txrows+=('{},{},{},{},{}\n'.format(hashStr(tx.hash),
+                                               amount,
+                                               blktime2datetime(self.blockHeader.time),
+                                               tx.inCount,
+                                               tx.outCount))
         return inputrows, outputrows, txrows
 
 

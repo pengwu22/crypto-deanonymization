@@ -9,7 +9,7 @@ from pyspark import SparkConf, SparkContext
 from blocktools import *
 from block import Block
 
-output_folder = './csv:2017-03-12/'
+output_folder = './csv/'
 import os
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
@@ -48,26 +48,24 @@ def main(argv_filenames, argv_setMaster):
     blocks = rawfiles.map(lambda filename: parse(open(filename))).flatMap(lambda x:x)
 
     # Output file
-    with open(output_folder+'inputs_mapping.csv:2017-03-12','w') as f:
+    with open(output_folder+'inputs_mapping.csv','w') as f:
         pass
-    with open(output_folder+'outputs.csv:2017-03-12','w') as f:
+    with open(output_folder+'outputs.csv','w') as f:
         pass
-    with open(output_folder+'transactions.csv:2017-03-12','w') as f:
+    with open(output_folder+'transactions.csv','w') as f:
         pass
     def formatted_print(block):
         """
         print the return of block.toMemery()
         """
-        with open(output_folder + 'inputs_mapping.csv:2017-03-12', 'a') as f:
+        with open(output_folder + 'inputs_mapping.csv', 'a') as f:
             f.write(block[0])
-        with open(output_folder + 'outputs.csv:2017-03-12', 'a') as f:
+        with open(output_folder + 'outputs.csv', 'a') as f:
             f.write(block[1])
-        with open(output_folder + 'transactions.csv:2017-03-12', 'a') as f:
+        with open(output_folder + 'transactions.csv', 'a') as f:
             f.write(block[2])
     blocks.foreach(formatted_print)
 
-    with open(output_folder + 'README.md', 'w') as f:
-        f.write('\n'.join(argv_filenames))
     # End Program
 
 
