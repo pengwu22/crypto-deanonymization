@@ -7,4 +7,4 @@ spark-submit spark_mapinput.py local[*] &&
 echo "\n###### Step 2 Done ######\n" &&
 #spark-submit spark_mapaddr.py local[*] &&
 echo "\n###### Parsed Files: ######\n"$files
-#spark-submit ../analytics/two_assumption_clustering.py
+#spark-submit ../analytics/cluster_twoassumption.py
