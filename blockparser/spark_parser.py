@@ -77,7 +77,7 @@ if __name__ == "__main__":
     start_time = time.time()
 
     if len(sys.argv) >= 3:
-        if sys.argv[1] == 'local[*]' or sys.argv[1] == 'yarn':
+        if sys.argv[1].startswith('local') or sys.argv[1] == 'yarn':
             main(argv_filenames = [sys.argv[i] for i in range(2, len(sys.argv))], argv_setMaster = sys.argv[1])
     else:
         print "\n\tUSAGE:\n\

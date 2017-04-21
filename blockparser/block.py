@@ -97,35 +97,38 @@ class Block:
         print ""
         print "#" * 10 + " Block Header " + "#" * 10
         self.blockHeader.toString()
-        print
         print "##### Tx Count: %d" % self.txCount
         for t in self.Txs:
             pass
             #t.toString()
+            #if hashStr(t.hash) == "3ae43bb0a8e4cc3a345a7a2a688217bcb8d9f7e9001263930cd23e9b3b7364c6":
+            #    raise KeyError
 
     def toMemory(self):
         inputrows = ''
         outputrows = ''
         txrows = ''
-        for tx in self.Txs:
-            for m, input in enumerate(tx.inputs):
-                inputrows+=('{},{},{},{},{}\n'.format(hashStr(tx.hash),
-                                                   m,
-                                                   hashStr(input.prevhash),
-                                                   input.txOutId,
-                                                   blktime2datetime(self.blockHeader.time)))
-            amount = 0
-            for n, output in enumerate(tx.outputs):
-                amount += output.value
-                outputrows+=('{},{},{},{}\n'.format(hashStr(tx.hash),
-                                                    n,
-                                                    output.value,
-                                                    rawpk2addr(output.pubkey)))
-            txrows+=('{},{},{},{},{}\n'.format(hashStr(tx.hash),
-                                               amount,
-                                               blktime2datetime(self.blockHeader.time),
-                                               tx.inCount,
-                                               tx.outCount))
+        timestamp = blktime2datetime(self.blockHeader.time)
+        if timestamp.startswith('20'):
+            for tx in self.Txs:
+                for m, input in enumerate(tx.inputs):
+                    inputrows+=('{},{},{},{},{}\n'.format(hashStr(tx.hash),
+                                                       m,
+                                                       hashStr(input.prevhash),
+                                                       input.txOutId,
+                                                       timestamp))
+                amount = 0
+                for n, output in enumerate(tx.outputs):
+                    amount += output.value
+                    outputrows+=('{},{},{},{}\n'.format(hashStr(tx.hash),
+                                                        n,
+                                                        output.value,
+                                                        rawpk2addr(output.pubkey)))
+                txrows+=('{},{},{},{},{}\n'.format(hashStr(tx.hash),
+                                                   amount,
+                                                   timestamp,
+                                                   tx.inCount,
+                                                   tx.outCount))
         return inputrows, outputrows, txrows
 
 
