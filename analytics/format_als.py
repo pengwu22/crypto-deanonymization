@@ -4,15 +4,16 @@ import csv
 
 
 print("sys.maxint = {}".format(sys.maxint))
-print("The program use 2^32 as the MAXINT.")
-MAXINT = 2**32
+print("The program use 2^31 as the MAXINT.")
+MAXINT = 2**31
 
-
+import hashlib
 def strID_to_intID(strID):
+    #return int(hashlib.sha256(strID).hexdigest(), base=16) % MAXINT
     return hash(strID) % MAXINT
 
 
-inputFileFolder = "../../csv-2013-10-25/"
+inputFileFolder = "../blockparser/csv/"
 
 ######
 
