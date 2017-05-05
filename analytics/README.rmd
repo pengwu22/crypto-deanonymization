@@ -8,7 +8,8 @@
 
 # Performance Statistics
 
-* 2-assumptions-clustering		
+* 2-assumptions-clustering
+
 	   | joint_control	|serial_control	|joint_serial_control
 -----|----------------|---------------|----------------_---
 real |	0m51.555s     |	0m21.624s	    |0m2.668s
