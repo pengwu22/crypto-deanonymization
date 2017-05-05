@@ -12,6 +12,7 @@ payer = sc.textFile("output/kmeans_node_payer_27000.csv")\
     .groupByKey()\
     .values()\
     .map(lambda x: set(x.data))
+
 payee = sc.textFile("output/kmeans_node_payee_27000.csv")\
     .map(lambda l: l.split(","))\
     .map(lambda x: (int(x[1]),int(x[0])))\
@@ -19,7 +20,7 @@ payee = sc.textFile("output/kmeans_node_payee_27000.csv")\
     .values()\
     .map(lambda x: set(x.data))
 
-edges = sc.textFile("data/addrs_intid.csv").map(lambda l: l.split(",")).map(lambda x: ((int(x[0]),int(x[1])),float(x[2])))\
+edges = sc.textFile("data/addrs_intid.csv").map(lambda l: l.split(",")).map(lambda x: ((int(x[0]),int(x[1])),float(x[2])))
 
 
 user_merged = payer.union(payee).collect()
@@ -38,23 +39,29 @@ visited = [0] * user_n # init all sets' states as 'not visited'
 # 0: not visited set
 # 1: visited, fully checked sets
 # 2: visited, deleted set
-
-for i in range(user_n): # the first set i
+# 3: temporary state, need to be compared again
+i = 0
+while( i < user_n ): # the first set i
     if visited[i] == 0: # if this set i hasn't been visited, then visit
-
         for j in range(i + 1, user_n): # all other following sets j
             if visited[j] == 0: # if this set j hasn't been visited, then visit
                 if (user_merged[i] & user_merged[j]): # if there are intersected, then union them
-
                     user_merged[i] = user_merged[i] | user_merged[j] # union set j's elements into the first set i
                     visited[j] = 2 # delete this set j
-
+                    visited[i] = 3 # re-check this set later
+                    break
                 #else: if there are not intersected then continue the loop
 
             #else: if the set j is deleted or  then go on to the next set j+1
 
         # inner loop finished, meaning that the set i's comparison is fully checked, no other sets have common elements with it, then mark it as 1
-        visited[i] = 1
+    if visited[i] == 3: # if this set is merged, compare it with all the other sets again
+        visited[i] = 0 # initiate its state, stay on this loop
+    elif visited[i] ==2: # if this set is deleted, go to next loop
+        i +=1
+    else:           # if this set is fully checked and not merged, it won't have any intersection anymore.
+        visited[i] = 1 # mark it as finished and go to next loop.
+        i += 1
 
     #else: the set i is deleted, we don't need to do anything, just go on with the loop.
 
@@ -71,8 +78,7 @@ for i in range(user_n):
 ##############################
 
 # store it into an rdd
-user_list_rdd = sc\
-            .parallelize(user_list)\
+user_list_rdd = sc.parallelize(user_list)\
             .zipWithUniqueId()\
             .map(lambda x: (x[1], x[0]))\
             .flatMapValues(lambda x: x)\
@@ -99,7 +105,7 @@ from collections import defaultdict
 dict_edge = defaultdict(float)
 
 # go through every record in addr table
-for record in edges.toLocalIterator():
+for record in edges.collect():
     try:
         dict_edge[(dict_user[record[0][0]], dict_user[record[0][1]])] += record[1]
     except KeyError:
