@@ -6,21 +6,21 @@ conf = SparkConf().setMaster("local").setAppName("union_find")
 sc = SparkContext(conf = conf)
 # sc = SparkContext()
 
-payer = sc.textFile("output/kmeans_node_payer_27000.csv")\
+payer = sc.textFile("kmeans_payer_node.csv")\
     .map(lambda l: l.split(","))\
     .map(lambda x: (int(x[1]),int(x[0])))\
     .groupByKey()\
     .values()\
     .map(lambda x: set(x.data))
 
-payee = sc.textFile("output/kmeans_node_payee_27000.csv")\
+payee = sc.textFile("kmeans_payee_node.csv")\
     .map(lambda l: l.split(","))\
     .map(lambda x: (int(x[1]),int(x[0])))\
     .groupByKey()\
     .values()\
     .map(lambda x: set(x.data))
 
-edges = sc.textFile("data/addrs_intid.csv").map(lambda l: l.split(",")).map(lambda x: ((int(x[0]),int(x[1])),float(x[2])))
+edges = sc.textFile("addrs_intid.csv").map(lambda l: l.split(",")).map(lambda x: ((int(x[0]),int(x[1])),float(x[2])))
 
 
 user_merged = payer.union(payee).collect()
@@ -118,11 +118,11 @@ for record in edges.collect():
 # write into csv:2017-03-12
 
 
-with open('output/kmeans_node_payer_payee_27000.csv', 'w') as f1:
+with open('kmeans_payer_payee_node.csv', 'w') as f1:
     for key in dict_user.keys():
         f1.write(str(key) + ',' + str(dict_user[key]) + '\n')
 
 
-with open('output/kmeans_edge_payer_payee_27000.csv', 'w') as f2:
+with open('kmeans_payer_payee_edge.csv', 'w') as f2:
     for key in dict_edge.keys():
         f2.write(str(key[0])+ ',' + str(key[1]) + ',' + str(dict_edge[key]) + '\n')

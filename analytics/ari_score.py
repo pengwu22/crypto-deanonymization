@@ -12,7 +12,7 @@ import pandas as pd
 joint = pd.read_csv("output/joint_total_node_intid.csv",header=None, names=["addr","user"] )
 serial  = pd.read_csv("output/serial_total_node_intid.csv",header=None, names=["addr","user"])
 joint_n_serial = pd.read_csv("output/joint_serial_total_node_intid.csv",header=None, names=["addr","user"])
-kmeans = pd.read_csv("output/kmeans_node.csv",header=None, names=["addr","user"])
+kmeans = pd.read_csv("output/kmeans_node_payer_payee_27000.csv",header=None, names=["addr","user"])
 
 
 # In[94]:
@@ -58,34 +58,34 @@ joint_n_serial
 
 # In[100]:
 
-adjusted_rand_score(joint.user,serial.user)
+print(adjusted_rand_score(joint.user,serial.user))
 
 
 # In[101]:
 
-adjusted_rand_score(joint_n_serial.user,serial.user)
+print(adjusted_rand_score(joint_n_serial.user,serial.user))
 
 
 # In[102]:
 
-adjusted_rand_score(joint_n_serial.user,joint.user)
+print(adjusted_rand_score(joint_n_serial.user,joint.user))
 
 
 # # K-means vs Others
 
 # In[103]:
 
-adjusted_rand_score(kmeans.user,serial.user)
+print(adjusted_rand_score(kmeans.user,serial.user))
 
 
 # In[104]:
 
-adjusted_rand_score(kmeans.user,joint.user)
+print(adjusted_rand_score(kmeans.user,joint.user))
 
 
 # In[105]:
 
-adjusted_rand_score(kmeans.user,joint_n_serial.user)
+print(adjusted_rand_score(kmeans.user,joint_n_serial.user))
 
 
 # In[ ]:

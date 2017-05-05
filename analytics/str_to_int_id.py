@@ -13,7 +13,7 @@ def strID_to_intID(strID):
     return hash(strID) % MAXINT
 
 
-inputFileFolder = "../blockparser/csv/"
+inputFileFolder = "/Users/SUIDANNING/Desktop/2017SPRING/CSDS/project/may5/"
 
 ######
 

@@ -3,11 +3,11 @@ from pyspark import SparkConf, SparkContext
 from pyspark.mllib.recommendation import ALS, MatrixFactorizationModel, Rating
 from pyspark.mllib.clustering import KMeans, KMeansModel
 
-conf = SparkConf().setAppName("ALS")
-sc = SparkContext()
+conf = SparkConf().setMaster("local").setAppName("ALS")
+sc = SparkContext(conf = conf)
 
 ########### prepare data ############
-data = sc.textFile("data/addrs_intid.csv")
+data = sc.textFile("addrs_intid.csv")
 # data = sc.textFile("test.csv")
 data_amount = data.map(lambda l: l.split(","))\
     .map(lambda l: ((int(l[0]),int(l[1])), float(l[2])))\
@@ -18,12 +18,12 @@ data_amount = data.map(lambda l: l.split(","))\
 ##### ALS to extract features #####
 ratings_amount = data_amount.map(lambda l: Rating(int(l[0][0]), int(l[0][1]), float(l[1])))
 model_amount = ALS.trainImplicit(ratings_amount,rank=4, iterations=5, lambda_=0.01, alpha=1.0, seed =5L)
-feature_payer = model_amount.userFeatures().persist()
+feature_payee = model_amount.userFeatures().persist()
 # feature_payer:[(payer_addr,(d1,d2,d3,d4))]
-feature_payee = model_amount.productFeatures().persist()
+feature_payer = model_amount.productFeatures().persist()
 # feature_payer:[(payee_addr,(d1,d2,d3,d4))]
 
-n_cluster = 27000
+n_cluster = 50000
 
 
 ##### KMEANS to cluster #####
@@ -45,7 +45,7 @@ node_payer = feature_payer.keys().zip(labels)
 node = node_payer.union(node_payee).persist()
 # node: [ addr ,user_id]
 
-with open("output/kmeans_node.csv", "w") as f1:
+with open("kmeans_payee_node.csv", "w") as f1:
     for i in node.collect():
         f1.write(str(i[0]) + ',' + str(i[1]) + '\n')
 
@@ -56,6 +56,6 @@ edge = data_amount.map(lambda x:(x[0][0],(x[0][1], x[1])))\
     .map(lambda x: ((x[1][0][0],x[1][1]), x[1][0][1]))\
     .reduceByKey(lambda x,y :x + y)
 
-with open("output/kmeans_edge.csv", "w") as f2:
+with open("kmeans_payee_edge.csv", "w") as f2:
     for i in edge.collect():
         f2.write(str(i[0][0]) + ',' + str(i[0][1]) + ',' + str(i[1])  + '\n')

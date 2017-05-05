@@ -1,4 +1,4 @@
-## /Users/SUIDANNING/spark-2.0.1-bin-hadoop2.7/bin/spark-submit two_assumption_clustering.py ##
+## time /Users/SUIDANNING/spark-2.0.1-bin-hadoop2.7/bin/spark-submit cluster_twoassumption.py ##
 
 from pyspark import SparkConf, SparkContext
 
@@ -8,15 +8,15 @@ sc = SparkContext(conf = conf)
 ########################
 # load data and parse
 ########################
-filefolder = "../blockparser/csv/"
+filefolder = "/Users/SUIDANNING/Desktop/2017SPRING/CSDS/project/may5/"
 
 ## datatype transform
-rdd_addr = sc.textFile(filefolder+"addrs.csv")\
+rdd_addr = sc.textFile(filefolder+"addrs_intid.csv")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[3], (x[0], x[1], float(x[2]))))
             ## key: hash , value: input_addr, output_addr, amount
 
-rdd_tx = sc.textFile(filefolder+"transactions.csv")\
+rdd_tx = sc.textFile(filefolder+"transactions_intid.csv")\
             .map(lambda line: line.split(','))\
             .map(lambda x: (x[0], (float(x[1]), int(x[3]), int(x[4]))))
             ## key: hash, value: amount, m, n
@@ -69,12 +69,18 @@ def joint_control(rdd_addr):
 ## In this part, we union the results above by their intersection.
 ## We come up with the final user-dict here
 
+# user_merged = serial_control(rdd_tx, rdd_addr)\
+#             .union(joint_control(rdd_addr))\
+#             .collect() #.persist()
+#
 user_merged = serial_control(rdd_tx, rdd_addr)\
-            .union(joint_control(rdd_addr))\
             .collect() #.persist()
 
+# user_merged = joint_control(rdd_addr)\
+#              .collect() #.persist()
+#
+#
 ## union the intersected sets into a big set
-
 ############################################## python object begins ###################################
 ###################
 # user set merge
@@ -168,11 +174,11 @@ for record in rdd_addr.values().toLocalIterator():
 # write into csv:2017-03-12
 
 
-with open(filefolder+'user_node.csv', 'w') as f1:
+with open(filefolder+'serial_partial_node.csv', 'w') as f1:
     for key in dict_user.keys():
         f1.write(str(key) + ',' + str(dict_user[key]) + '\n')
 
 
-with open(filefolder+'user_edge.csv', 'w') as f2:
+with open(filefolder+'serial_partial_edge.csv', 'w') as f2:
     for key in dict_edge.keys():
         f2.write(str(key[0])+ ',' + str(key[1]) + ',' + str(dict_edge[key]) + '\n')
