@@ -1,4 +1,37 @@
-
-
 # Flow Chart
 <img src="https://github.com/pw2393/project_csds/blob/master/analytics/files_usage.jpeg">
+
+
+# Graph Statistics
+
+
+
+# Performance Statistics
+
+* 2-assumptions-clustering		
+	   | joint_control	|serial_control	|joint_serial_control
+-----|----------------|---------------|----------------_---
+real |	0m51.555s     |	0m21.624s	    |0m2.668s
+user |	0m2.668s     	| 0m18.373s     |	0m57.353s
+sys  |   	0m2.484s	  | 0m2.782s	      |0m2.668s
+			
+			
+	node-reconstruction		
+	joint_control	serial_control	joint_serial_control
+real	4m32.686s	0m51.909s	3m22.195s
+user	0m25.281s	0m25.251s	0m24.148s
+sys     	0m4.443s	0m2.525s	0m2.504s
+			
+			
+	kmeans		
+	payer	payee	
+cluster			
+			
+			
+			
+			
+	kmeans-unionfind		
+	payer_payee		
+real			
+user			
+sys     			
