@@ -8,7 +8,7 @@ This project is a Bitcoin transaction data Parser, based on Python and Spark's P
 
 ## Files
 
-Filename | Description | First Author | Modified by
+Program File | Description | First Author | Modified by
 ------ | ------ | ------ | ------
 base58.py | module: necessary encoder for public address | Gavin Andresen | Peng Wu
 blocktools.py | module: tools for reading binary data from block files | Alex Gorale | Peng Wu
@@ -16,6 +16,14 @@ block.py | module: classes for Blocks, Transactions | Alex Gorale | Peng Wu
 spark_parser.py | parser: step 1| Peng Wu |
 spark_mapinput.py | parser: step 2 | Peng Wu |
 spark_mapaddrs.py | parser: step 3 | Peng Wu |
+
+CSV Files | Format
+------ | ------
+transactions.csv  | tx_hash, tx_value, timestamp, num_inputs, num_outputs
+outputs.csv  | tx_hash, output_index, output_value, output_address
+inputs_mapping.csv  |  tx_hash, input_index, prev_tx_hash, output_index
+inputs.csv  | tx_hash, input_index, input_value, input_address
+addrs.csv  | payer_address, payee_address, value, tx_hash
 
 
 ## Usage: Data Pipeline
@@ -35,9 +43,7 @@ Input:
 `blkXXXXX.dat`
 
 Output:
-`inputs_mapping.csv`,
-`outputs.csv`,
-`transaction.csv`
+`transaction.csv`, ``inputs_mapping.csv`, `outputs.csv`
 
 #### Step 2
 ```
@@ -53,7 +59,7 @@ Outputs:
 
 #### Step 3
 ```
-spark-submit spark_mapinput.py
+spark-submit spark_mapaddr.py
 ```
 
 Input:
