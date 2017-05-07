@@ -21,8 +21,8 @@ spark_mapaddrs.py | parser: step 3 | Peng Wu |
 ## Usage: Data Pipeline
 
 #### General In and Out
-* Input: unlimited number of blkXXXXX.dat files
-* Output: CSV files (saved for files) OR Spark-RDD (for further analysis)
+* Input: unlimited number of `blkXXXXX.dat` files
+* Output: `.csv` files (saved for files) OR Spark-RDD (for further analysis)
 * The following steps illustrate the CSV way of output.
 However, if you familiar with Spark can combine all 3 steps into one,
 so that all outputs in the middle will be handled as RDD. It'd be faster.
@@ -32,12 +32,12 @@ so that all outputs in the middle will be handled as RDD. It'd be faster.
 spark-submit spark_parser.py blk00001.dat blk00002.dat ...
 ```
 Input:
-blkXXXXX.dat: Bitcoin raw binary blockchain data file
+`blkXXXXX.dat`
 
 Output:
-inputs_mapping.csv:
-outputs.csv:
-transaction.csv:
+`inputs_mapping.csv`,
+`outputs.csv`,
+`transaction.csv`
 
 #### Step 2
 ```
@@ -45,11 +45,11 @@ spark-submit spark_mapinput.py
 ```
 
 Input:
-inputs_mapping.csv:
-outputs.csv:
+`inputs_mapping.csv`,
+`outputs.csv`
 
 Outputs:
-inputs.csv
+`inputs.csv`
 
 #### Step 3
 ```
@@ -57,11 +57,11 @@ spark-submit spark_mapinput.py
 ```
 
 Input:
-inputs.csv
-outputs.csv
+`inputs.csv`,
+`outputs.csv`
 
 Outputs:
-addrs.csv
+`addrs.csv`
 
 ## License
 
