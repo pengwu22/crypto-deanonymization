@@ -33,11 +33,6 @@ inputs_mapping.csv:
 outputs.csv:
 transaction.csv:
 
-```
-spark-submit spark_mapinput.py local[*]
-spark-submit sprk_mapaddr.py local[*]
-```
-
 ### Step 2
 ```
 spark-submit spark_mapinput.py
