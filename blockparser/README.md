@@ -6,7 +6,6 @@ Scalable analysis is called for.
 
 This project is a Bitcoin transaction data Parser, based on Python and Spark's Python API – PySpark.
 
-
 ## Files
 
 Filename | Description | First Author | Modified by
@@ -21,7 +20,14 @@ spark_mapaddrs.py | parser: step 3 | Peng Wu |
 
 ## Usage: Data Pipeline
 
-### Step 1
+#### General In and Out
+* Input: unlimited number of blkXXXXX.dat files
+* Output: CSV files (saved for files) OR Spark-RDD (for further analysis)
+* The following steps illustrate the CSV way of output.
+However, if you familiar with Spark can combine all 3 steps into one,
+so that all outputs in the middle will be handled as RDD. It'd be faster.
+
+#### Step 1
 ```
 spark-submit spark_parser.py blk00001.dat blk00002.dat ...
 ```
@@ -33,7 +39,7 @@ inputs_mapping.csv:
 outputs.csv:
 transaction.csv:
 
-### Step 2
+#### Step 2
 ```
 spark-submit spark_mapinput.py
 ```
@@ -45,7 +51,7 @@ outputs.csv:
 Outputs:
 inputs.csv
 
-### Step 3
+#### Step 3
 ```
 spark-submit spark_mapinput.py
 ```
