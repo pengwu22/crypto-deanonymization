@@ -16,7 +16,7 @@ The original data (transactions verified on Oct 25, 2013) has 68584 distinct str
 After spliting multiple inputs and outputs, there are 265,479 transaction records in data.
 
 
-clustering type | node | edge | shrinkage rate | leaf node | isolated node |
+graph type | node | edge | shrinkage rate | leaf node | isolated node |
 ----------------|---------------|-----------|-----------|------------|----------------|
 original | 68582 | 265479 | 100% | 13509 | 1 |
 serial control | 67313 | 208253 | 98.15% | 13728 | 82 |
