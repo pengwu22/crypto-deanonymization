@@ -3,15 +3,15 @@ Filename: block.py
 Purpose: definitions blockchain component classes and methods
 
 Authors:
-    * https://github.com/tenthirtyone/blocktools
-    * Peng Wu
+    * Alex (https://github.com/tenthirtyone)
+    * Peng Wu (https://github.com/pw2393)
 
-New features:
+New features (compared with https://github.com/tenthirtyone/blocktools):
     * Identify bloch hash
     * Identify transaction hash
     # CSV file output
 
-Licenses: BSD 3
+Licenses: MIT
 """
 
 from blocktools import *
@@ -109,26 +109,26 @@ class Block:
         outputrows = ''
         txrows = ''
         timestamp = blktime2datetime(self.blockHeader.time)
-        if timestamp.startswith('20'):
-            for tx in self.Txs:
-                for m, input in enumerate(tx.inputs):
-                    inputrows+=('{},{},{},{},{}\n'.format(hashStr(tx.hash),
-                                                       m,
-                                                       hashStr(input.prevhash),
-                                                       input.txOutId,
-                                                       timestamp))
-                amount = 0
-                for n, output in enumerate(tx.outputs):
-                    amount += output.value
-                    outputrows+=('{},{},{},{}\n'.format(hashStr(tx.hash),
-                                                        n,
-                                                        output.value,
-                                                        rawpk2addr(output.pubkey)))
-                txrows+=('{},{},{},{},{}\n'.format(hashStr(tx.hash),
-                                                   amount,
-                                                   timestamp,
-                                                   tx.inCount,
-                                                   tx.outCount))
+        # if timestamp.startswith('2013-10-25'):
+        for tx in self.Txs:
+            for m, input in enumerate(tx.inputs):
+                inputrows+=('{},{},{},{},{}\n'.format(hashStr(tx.hash),
+                                                   m,
+                                                   hashStr(input.prevhash),
+                                                   input.txOutId,
+                                                   timestamp))
+            amount = 0
+            for n, output in enumerate(tx.outputs):
+                amount += output.value
+                outputrows+=('{},{},{},{}\n'.format(hashStr(tx.hash),
+                                                    n,
+                                                    output.value,
+                                                    rawpk2addr(output.pubkey)))
+            txrows+=('{},{},{},{},{}\n'.format(hashStr(tx.hash),
+                                               amount,
+                                               timestamp,
+                                               tx.inCount,
+                                               tx.outCount))
         return inputrows, outputrows, txrows
 
 
@@ -196,3 +196,4 @@ class txOutput:
         print "Value:\t\t %d" % self.value
         print "Script Len:\t %d" % self.scriptLen
         print "Pubkey:\t\t %s" % hashStr(self.pubkey)
+

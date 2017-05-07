@@ -3,15 +3,15 @@ Filename: blocktools.py
 Purpose: basic functions utilized by blockchain parser
 
 Authors:
-    * https://github.com/tenthirtyone/blocktools
-    * Peng Wu
+    * Alex (https://github.com/tenthirtyone)
+    * Peng Wu (https://github.com/pw2393)
 
-Licenses: BSD 3
+Licenses: MIT
 """
 
 ######
 # Section I
-# Author: https://github.com/tenthirtyone/blocktools
+# Author: Alex
 ######
 
 import struct
