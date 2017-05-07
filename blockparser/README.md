@@ -34,6 +34,7 @@ addrs.csv  | payer_address, payee_address, value, tx_hash
 * The following steps illustrate the CSV way of output.
 However, if you familiar with Spark can combine all 3 steps into one,
 so that all outputs in the middle will be handled as RDD. It'd be faster.
+* For quick and easy application, see `spark_workflow.sh`.
 
 #### Step 1
 ```
@@ -43,7 +44,7 @@ Input:
 `blkXXXXX.dat`
 
 Output:
-`transaction.csv`, ``inputs_mapping.csv`, `outputs.csv`
+`transaction.csv`, inputs_mapping.csv`, `outputs.csv`
 
 #### Step 2
 ```
