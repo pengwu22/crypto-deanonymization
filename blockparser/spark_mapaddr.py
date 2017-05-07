@@ -52,10 +52,10 @@ def one_to_one_tx(two_lists):
     return result
 
 
-def main(argv_setMaster):
+def main():
 
     # Initialize Spark Context: local multi-threads
-    conf = SparkConf().setMaster(argv_setMaster).setAppName("mapaddr")
+    conf = SparkConf().setAppName("BTC-AddressMapper")
     sc = SparkContext(conf=conf)
 
     # Load files
@@ -76,21 +76,13 @@ def main(argv_setMaster):
     final.foreach(formatted_print)
 
 
-
-
 if __name__ == "__main__":
     import sys
-    import time
-    # Initialize Timer
-    start_time = time.time()
+    if len(sys.argv) != 1:
+        print "\n\tUSAGE:\n\t\tspark-submit spark_mapaddr.py"
+        sys.exit()
 
-    if len(sys.argv) == 2:
-        if sys.argv[1] == 'local[*]' or sys.argv[1] == 'yarn':
-            main(argv_setMaster = sys.argv[1])
-    else:
-        print "\n\tUSAGE:\n\
-                spark-submit spark_mapaddr.py local[*]\
-                spark-submit spark_mapaddr.py yarn\
-              "
-    # End Program
+    import time
+    start_time = time.time()
+    main()
     print("--- %s seconds ---" % (time.time() - start_time))

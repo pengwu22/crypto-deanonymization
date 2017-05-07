@@ -9,6 +9,7 @@ from pyspark import SparkConf, SparkContext
 from blocktools import *
 from block import Block
 
+
 output_folder = './csv/'
 import os
 if not os.path.exists(output_folder):
@@ -37,52 +38,31 @@ def parse(blockchain):
     return blocks
 
 
-def main(argv_filenames, argv_setMaster):
+def main():
+
     # Initialize Spark Context: local multi-threads
-    conf = SparkConf().setMaster(argv_setMaster).setAppName("parser")
+    conf = SparkConf().setAppName("BTC-Parser")
     sc = SparkContext(conf=conf)
 
-    rawfiles = sc.parallelize(argv_filenames)
+    rawfiles = sc.parallelize([sys.argv[i] for i in range(1, len(sys.argv))])
 
     # Transformations and/or Actions
-    blocks = rawfiles.map(lambda filename: parse(open(filename))).flatMap(lambda x:x)
-
-    # Output file
-    with open(output_folder+'inputs_mapping.csv','w') as f:
-        pass
-    with open(output_folder+'outputs.csv','w') as f:
-        pass
-    with open(output_folder+'transactions.csv','w') as f:
-        pass
-    def formatted_print(block):
-        """
-        print the return of block.toMemery()
-        """
-        with open(output_folder + 'inputs_mapping.csv', 'a') as f:
-            f.write(block[0])
-        with open(output_folder + 'outputs.csv', 'a') as f:
-            f.write(block[1])
-        with open(output_folder + 'transactions.csv', 'a') as f:
-            f.write(block[2])
-    blocks.foreach(formatted_print)
+    blocks = rawfiles.map(lambda filename: parse(open(filename))).flatMap(lambda x:x).cache()
 
     # End Program
+    blocks.map(lambda block:block[0]).saveAsTextFile(output_folder+'inputs_mapping')
+    blocks.map(lambda block:block[1]).saveAsTextFile(output_folder+'outputs')
+    blocks.map(lambda block:block[2]).saveAsTextFile(output_folder+'transactions')
 
 
 if __name__ == "__main__":
 
     import sys
+    if len(sys.argv) < 2:
+        print "\n\tUSAGE:\n\t\tspark-submit spark_parser.py filename1.dat filename2.dat ..."
+        sys.exit()
+
     import time
-    # Initialize Timer
     start_time = time.time()
-
-    if len(sys.argv) >= 3:
-        if sys.argv[1].startswith('local') or sys.argv[1] == 'yarn':
-            main(argv_filenames = [sys.argv[i] for i in range(2, len(sys.argv))], argv_setMaster = sys.argv[1])
-    else:
-        print "\n\tUSAGE:\n\
-                spark-submit spark_parser.py local[*] filename1.dat filename2.dat ...\n\
-                spark-submit spark_parser.py yarn filename1.dat filename2.dat ...\n\
-              "
-
+    main()
     print("--- %s seconds ---" % (time.time() - start_time))

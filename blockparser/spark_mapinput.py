@@ -9,9 +9,9 @@ from pyspark import SparkConf, SparkContext
 output_folder = './csv/'
 
 
-def main(argv_setMaster):
-
-    conf = SparkConf().setMaster(argv_setMaster).setAppName("mapinput")
+def main():
+    # Initialize Spark Context: local multi-threads
+    conf = SparkConf().setAppName("BTC-InputMapper")
     sc = SparkContext(conf=conf)
 
 
@@ -61,29 +61,23 @@ def main(argv_setMaster):
     final.foreach(formatted_print)
 
 
-    with open(output_folder+'viz_txedge.csv', 'w') as f:
-        pass
-    def formatted_print_2(keyValue):
-        with open(output_folder+'viz_txedge.csv', 'a') as f:
-            f.write('{},{},{},{}\n'.format(keyValue[0][0], keyValue[1][1][0], keyValue[1][0][0], keyValue[1][0][2]))
-    metafinal.foreach(formatted_print_2)
-    #print metafinal.first()
+#    with open(output_folder+'viz_txedge.csv', 'w') as f:
+#        pass
+#    def formatted_print_2(keyValue):
+#        with open(output_folder+'viz_txedge.csv', 'a') as f:
+#            f.write('{},{},{},{}\n'.format(keyValue[0][0], keyValue[1][1][0], keyValue[1][0][0], keyValue[1][0][2]))
+#    metafinal.foreach(formatted_print_2)
+#    #print metafinal.first()
 
 
 if __name__ == "__main__":
 
     import sys
+    if len(sys.argv) != 1:
+        print "\n\tUSAGE:\n\t\tspark-submit spark_mapinput.py"
+        sys.exit()
+
     import time
-    # Initialize Timer
     start_time = time.time()
-
-    if len(sys.argv) == 2:
-        if sys.argv[1] == 'local[*]' or sys.argv[1] == 'yarn':
-            main(argv_setMaster = sys.argv[1])
-    else:
-        print "\n\tUSAGE:\n\
-                spark-submit spark_mapinput.py local[*]\
-                spark-submit spark_mapinput.py yarn\
-              "
-
+    main()
     print("--- %s seconds ---" % (time.time() - start_time))
