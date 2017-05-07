@@ -1,7 +1,7 @@
 # Methods
 
 ## Serial Joint Control
-<img src="https://github.com/pw2393/project_csds/blob/master/analytics/sj.jpeg">
+<img src="https://github.com/pw2393/project_csds/blob/master/analytics/serial-joint-control.jpeg">
 
 ## Kmeans Clustering
 
