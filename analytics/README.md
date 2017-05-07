@@ -1,3 +1,10 @@
+# Methods
+
+## Serial Joint Control
+<img src="https://github.com/pw2393/project_csds/blob/master/analytics/sj.jpeg">
+
+## Kmeans Clustering
+
 # Flow Chart
 <img src="https://github.com/pw2393/project_csds/blob/master/analytics/files_usage.jpeg">
 
